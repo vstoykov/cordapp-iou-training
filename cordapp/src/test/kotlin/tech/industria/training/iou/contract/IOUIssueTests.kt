@@ -1,9 +1,10 @@
-package com.template
+package tech.industria.training.iou.contract
 
 import net.corda.testing.node.MockServices
 import org.junit.Test
 
-class ContractTests {
+
+class IOUIssueTests {
     val ledgerServices = MockServices()
 
     @Test

@@ -1,4 +1,4 @@
-package com.template
+package tech.industria.training.iou
 
 import net.corda.core.identity.CordaX500Name
 import net.corda.core.utilities.getOrThrow
@@ -47,13 +47,13 @@ class DriverBasedTest {
                 val webserverHandle = startWebserver(nodeHandle).getOrThrow()
 
                 val nodeAddress = webserverHandle.listenAddress
-                val url = "http://$nodeAddress/api/template/templateGetEndpoint"
+                val url = "http://$nodeAddress/api/iou/getEndpoint"
 
                 val request = Request.Builder().url(url).build()
                 val client = OkHttpClient()
                 val response = client.newCall(request).execute()
 
-                assertEquals("Template GET endpoint.", response.body().string())
+                assertEquals("{\"success\": true, \"data\": \"IOU Get Endpoint\" }", response.body().string())
             }
         }
     }
