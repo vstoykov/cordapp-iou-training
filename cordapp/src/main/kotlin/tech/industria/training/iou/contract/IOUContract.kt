@@ -36,8 +36,24 @@ class IOUContract : Contract {
             }
 
             is Commands.Transfer -> requireThat {
+                "An IOU transfer transaction should only consume one input state" using (tx.inputs.size == 1)
+                "An IOU transfer transaction should only produce one output state" using (tx.outputs.size == 1)
 
+                val input = tx.inputStates.single() as IOUState
+                val output = tx.outputStates.single() as IOUState
+                "Only the lender property may change" using (input == output.copy(lender = input.lender))
+                "The lender property must change in a transfer" using (input.lender != output.lender)
+                "The new lender should not be the borrower" using (output.lender != output.borrower)
+                "The borrower, old lender and new lender only must sign an IOU transfer transaction" using (
+                        command.signers.toSet() == (
+                                input.participants.map { it.owningKey }.toSet() union output.participants.map { it.owningKey }.toSet()))
             }
+
+            is Commands.Settle -> requireThat {
+                TODO("Commands Settle is not implemented yet!")
+            }
+
+            else -> throw IllegalArgumentException("Invalid command")
         }
     }
 }
