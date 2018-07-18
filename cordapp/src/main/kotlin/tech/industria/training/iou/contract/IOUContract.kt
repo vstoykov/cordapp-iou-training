@@ -50,7 +50,12 @@ class IOUContract : Contract {
             }
 
             is Commands.Settle -> requireThat {
-                TODO("Commands Settle is not implemented yet!")
+                "An IOU settle transaction should only consume one input state" using (tx.inputs.size == 1)
+                "An IOU settle transaction should not produce any output states" using (tx.outputs.size == 0)
+
+                val input = tx.inputStates.single() as IOUState
+                "An IOU settle transaction should be signed only by lender and borrower" using (
+                        command.signers.toSet() == input.participants.map { it.owningKey }.toSet())
             }
 
             else -> throw IllegalArgumentException("Invalid command")
