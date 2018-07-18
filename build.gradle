@@ -79,7 +79,6 @@ dependencies {
     // Specify your CorDapp's dependencies below, including dependent CorDapps.
     // We've defined Cash as a dependent CorDapp as an example.
     cordapp project(":cordapp")
-    cordapp project(":cordapp-contracts-states")
     cordapp "$corda_release_group:corda-finance:$corda_release_version"
 }
 
@@ -104,7 +103,6 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         notary = [validating : true]
         p2pPort 10002
         cordapps = [
-                "$project.group:cordapp-contracts-states:$project.version",
                 "$project.group:cordapp:$project.version",
                 "$corda_release_group:corda-finance:$corda_release_version"
         ]
@@ -118,7 +116,6 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         }
         webPort 10007
         cordapps = [
-                "$project.group:cordapp-contracts-states:$project.version",
                 "$project.group:cordapp:$project.version",
                 "$corda_release_group:corda-finance:$corda_release_version"
         ]
@@ -133,7 +130,6 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         }
         webPort 10010
         cordapps = [
-                "$project.group:cordapp-contracts-states:$project.version",
                 "$project.group:cordapp:$project.version",
                 "$corda_release_group:corda-finance:$corda_release_version"
         ]
