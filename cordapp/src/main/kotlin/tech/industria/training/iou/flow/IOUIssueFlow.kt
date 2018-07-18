@@ -18,16 +18,16 @@ class IOUIssueFlow {
     @InitiatingFlow
     @StartableByRPC
     class Initiator(
-            val iouValue: Amount<Currency>,
-            val otherParty: Party
+            val amount: Amount<Currency>,
+            val lender: Party
 
     ) : FlowLogic<SignedTransaction>() {
 
         companion object {
             object GENERATING_TX : ProgressTracker.Step("Generating transaction.")
-            object VERIFING_TX: ProgressTracker.Step("Verifying contract.")
-            object COLLECTING_TX_SIGNATURES: ProgressTracker.Step("Collecting signatures.")
-            object FINALIZING_TX: ProgressTracker.Step("Finalizing transaction.")
+            object VERIFING_TX : ProgressTracker.Step("Verifying contract.")
+            object COLLECTING_TX_SIGNATURES : ProgressTracker.Step("Collecting signatures.")
+            object FINALIZING_TX : ProgressTracker.Step("Finalizing transaction.")
 
             fun tracker() = ProgressTracker(GENERATING_TX, VERIFING_TX, COLLECTING_TX_SIGNATURES, FINALIZING_TX)
         }
@@ -35,12 +35,12 @@ class IOUIssueFlow {
         override val progressTracker = tracker()
 
         @Suspendable
-        override fun call() : SignedTransaction {
+        override fun call(): SignedTransaction {
             val notary = serviceHub.networkMapCache.notaryIdentities.first()
 
             progressTracker.currentStep = GENERATING_TX
-            System.out.printf("iouValue = %s", iouValue)
-            val outputState = IOUState(iouValue, ourIdentity, otherParty)
+            System.out.printf("amount = %s", amount)
+            val outputState = IOUState(amount, borrower = ourIdentity, lender = lender)
             val issueCommand = Command(IOUContract.Commands.Issue(), outputState.participants.map { it.owningKey })
 
             val txBuilder = TransactionBuilder(notary = notary)
@@ -55,8 +55,9 @@ class IOUIssueFlow {
 
             val signedTx = serviceHub.signInitialTransaction(txBuilder)
 
-            // In this case is equivalent to listOf(initiateFlow(otherParty)), but this is more generic approach
+            // In this case is equivalent to listOf(initiateFlow(lender)), but this is more generic approach
             val sessions = (outputState.participants - ourIdentity).map { initiateFlow(it) }.toSet()
+
 
             val fullySignedTx = subFlow(CollectSignaturesFlow(signedTx, sessions, CollectSignaturesFlow.tracker()))
 
