@@ -4,7 +4,6 @@ import net.corda.core.contracts.ContractState
 import net.corda.core.identity.AbstractParty
 import net.corda.core.identity.CordaX500Name
 import net.corda.finance.POUNDS
-import net.corda.testing.core.DUMMY_NOTARY_NAME
 import net.corda.testing.core.TestIdentity
 import net.corda.testing.node.MockServices
 import net.corda.testing.node.ledger
@@ -17,7 +16,6 @@ class IOUIssueTests {
             listOf("tech.industria.training.iou"),
             identityService = makeTestIdentityService(),
             initialIdentity = TestIdentity(CordaX500Name("TestIdentity", "", "BG")))
-    protected val dummyNotary = TestIdentity(DUMMY_NOTARY_NAME, 20);
     protected val alice = TestIdentity(CordaX500Name("Alice", "", "BG"))
     protected val bob = TestIdentity(CordaX500Name("Bob", "", "BG"))
     protected val charlie = TestIdentity(CordaX500Name("Charlie", "", "BG"))
@@ -31,7 +29,7 @@ class IOUIssueTests {
 
     @Test
     fun `create transaction must have no inputs`() {
-        ledgerServices.ledger(dummyNotary.party) {
+        ledgerServices.ledger {
             transaction {
                 command(listOf(alice.publicKey, bob.publicKey), IOUContract.Commands.Issue())
                 input(IOUContract.PROGRAM_ID, DummyState())
@@ -48,7 +46,7 @@ class IOUIssueTests {
 
     @Test
     fun `create transaction must have one output`() {
-        ledgerServices.ledger(dummyNotary.party) {
+        ledgerServices.ledger {
             transaction {
                 command(listOf(alice.publicKey, bob.publicKey), IOUContract.Commands.Issue())
                 output(IOUContract.PROGRAM_ID, tenFromAliceToBob)
@@ -65,7 +63,7 @@ class IOUIssueTests {
 
     @Test
     fun `cannot create transaction with negative or zero value`() {
-        ledgerServices.ledger(dummyNotary.party) {
+        ledgerServices.ledger {
             transaction {
                 command(listOf(alice.publicKey, bob.publicKey), IOUContract.Commands.Issue())
                 output(IOUContract.PROGRAM_ID, IOUState(0.POUNDS, alice.party, bob.party))
@@ -81,7 +79,7 @@ class IOUIssueTests {
 
     @Test
     fun `there should be only two signers to create transaction`() {
-        ledgerServices.ledger(dummyNotary.party) {
+        ledgerServices.ledger {
             transaction {
                 command(listOf(alice.publicKey), IOUContract.Commands.Issue())
                 output(IOUContract.PROGRAM_ID, tenFromAliceToBob)
@@ -97,7 +95,7 @@ class IOUIssueTests {
 
     @Test
     fun `lender and borrower must sign create transaction`() {
-        ledgerServices.ledger(dummyNotary.party) {
+        ledgerServices.ledger {
             transaction {
                 command(listOf(alice.publicKey, bob.publicKey), IOUContract.Commands.Issue())
                 output(IOUContract.PROGRAM_ID, fiveFromBobToCharlie)
@@ -108,7 +106,7 @@ class IOUIssueTests {
 
     @Test
     fun `lender and borrower cannot be the same`() {
-        ledgerServices.ledger(dummyNotary.party) {
+        ledgerServices.ledger {
             transaction {
                 command(listOf(alice.publicKey, bob.publicKey), IOUContract.Commands.Issue())
                 output(IOUContract.PROGRAM_ID, IOUState(10.POUNDS, alice.party, alice.party))

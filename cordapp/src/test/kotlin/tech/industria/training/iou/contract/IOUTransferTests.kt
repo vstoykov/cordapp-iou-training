@@ -4,7 +4,6 @@ import net.corda.core.contracts.ContractState
 import net.corda.core.identity.AbstractParty
 import net.corda.core.identity.CordaX500Name
 import net.corda.finance.POUNDS
-import net.corda.testing.core.DUMMY_NOTARY_NAME
 import net.corda.testing.core.TestIdentity
 import net.corda.testing.node.MockServices
 import net.corda.testing.node.ledger
@@ -17,7 +16,6 @@ class IOUTransferTests {
             listOf("tech.industria.training.iou"),
             identityService = makeTestIdentityService(),
             initialIdentity = TestIdentity(CordaX500Name("TestIdentity", "", "BG")))
-    protected val dummyNotary = TestIdentity(DUMMY_NOTARY_NAME, 20);
     protected val alice = TestIdentity(CordaX500Name("Alice", "", "BG"))
     protected val bob = TestIdentity(CordaX500Name("Bob", "", "BG"))
     protected val charlie = TestIdentity(CordaX500Name("Charlie", "", "BG"))
@@ -32,7 +30,7 @@ class IOUTransferTests {
 
     @Test
     fun `successful transfer`() {
-        ledgerServices.ledger(dummyNotary.party) {
+        ledgerServices.ledger {
             transaction {
                 command(participants, IOUContract.Commands.Transfer())
                 input(IOUContract.PROGRAM_ID, bobOwesAliceTen)
@@ -44,7 +42,7 @@ class IOUTransferTests {
 
     @Test
     fun `transfer should have only one input`() {
-        ledgerServices.ledger(dummyNotary.party) {
+        ledgerServices.ledger {
             transaction {
                 command(participants, IOUContract.Commands.Transfer())
                 output(IOUContract.PROGRAM_ID, bobOwesAliceTen)
@@ -62,7 +60,7 @@ class IOUTransferTests {
 
     @Test
     fun `transfer should have only one output`() {
-        ledgerServices.ledger(dummyNotary.party) {
+        ledgerServices.ledger {
             transaction {
                 command(participants, IOUContract.Commands.Transfer())
                 input(IOUContract.PROGRAM_ID, IOUTransferTests.DummyState())
@@ -80,7 +78,7 @@ class IOUTransferTests {
 
     @Test
     fun `the ammount and borrower should remain the same`() {
-        ledgerServices.ledger(dummyNotary.party) {
+        ledgerServices.ledger {
             transaction {
                 command(participants, IOUContract.Commands.Transfer())
                 input(IOUContract.PROGRAM_ID, bobOwesAliceTen)
@@ -98,7 +96,7 @@ class IOUTransferTests {
 
     @Test
     fun `the lender should be different`() {
-        ledgerServices.ledger(dummyNotary.party) {
+        ledgerServices.ledger {
             transaction {
                 command(participants, IOUContract.Commands.Transfer())
                 input(IOUContract.PROGRAM_ID, bobOwesAliceTen)
@@ -110,7 +108,7 @@ class IOUTransferTests {
 
     @Test
     fun `the new lender should not be the borrower`() {
-        ledgerServices.ledger(dummyNotary.party) {
+        ledgerServices.ledger {
             transaction {
                 command(participants, IOUContract.Commands.Transfer())
                 input(IOUContract.PROGRAM_ID, bobOwesAliceTen)
@@ -122,7 +120,7 @@ class IOUTransferTests {
 
     @Test
     fun `all three parties should sign`() {
-        ledgerServices.ledger(dummyNotary.party) {
+        ledgerServices.ledger {
             transaction {
                 command(listOf(alice.publicKey), IOUContract.Commands.Transfer())
                 input(IOUContract.PROGRAM_ID, bobOwesAliceTen)

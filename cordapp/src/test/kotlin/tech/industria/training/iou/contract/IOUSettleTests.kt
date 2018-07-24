@@ -2,7 +2,6 @@ package tech.industria.training.iou.contract
 
 import net.corda.core.identity.CordaX500Name
 import net.corda.finance.POUNDS
-import net.corda.testing.core.DUMMY_NOTARY_NAME
 import net.corda.testing.core.TestIdentity
 import net.corda.testing.node.MockServices
 import net.corda.testing.node.ledger
@@ -15,7 +14,6 @@ class IOUSettleTests {
             listOf("tech.industria.training.iou"),
             identityService = makeTestIdentityService(),
             initialIdentity = TestIdentity(CordaX500Name("TestIdentity", "", "BG")))
-    protected val dummyNotary = TestIdentity(DUMMY_NOTARY_NAME, 20);
     protected val alice = TestIdentity(CordaX500Name("Alice", "", "BG"))
     protected val bob = TestIdentity(CordaX500Name("Bob", "", "BG"))
     protected val charlie = TestIdentity(CordaX500Name("Charlie", "", "BG"))
@@ -25,7 +23,7 @@ class IOUSettleTests {
 
     @Test
     fun `successful settle`() {
-        ledgerServices.ledger(dummyNotary.party) {
+        ledgerServices.ledger {
             transaction {
                 command(participants, IOUContract.Commands.Settle())
                 input(IOUContract.PROGRAM_ID, bobOwesAliceTen)
@@ -35,8 +33,8 @@ class IOUSettleTests {
     }
 
     @Test
-    fun `settle should have only one input`(){
-        ledgerServices.ledger(dummyNotary.party) {
+    fun `settle should have only one input`() {
+        ledgerServices.ledger {
             transaction {
                 command(participants, IOUContract.Commands.Settle())
                 input(IOUContract.PROGRAM_ID, bobOwesAliceTen)
@@ -48,7 +46,7 @@ class IOUSettleTests {
 
     @Test
     fun `settle should have no outputs`() {
-        ledgerServices.ledger(dummyNotary.party) {
+        ledgerServices.ledger {
             transaction {
                 command(participants, IOUContract.Commands.Settle())
                 input(IOUContract.PROGRAM_ID, bobOwesAliceTen)
@@ -60,7 +58,7 @@ class IOUSettleTests {
 
     @Test
     fun `both borrower and lender should sign`() {
-        ledgerServices.ledger(dummyNotary.party) {
+        ledgerServices.ledger {
             transaction {
                 command(alice.publicKey, IOUContract.Commands.Settle())
                 input(IOUContract.PROGRAM_ID, bobOwesAliceTen)
