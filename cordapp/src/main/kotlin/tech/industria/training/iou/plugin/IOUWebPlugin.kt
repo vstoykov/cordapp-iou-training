@@ -7,7 +7,7 @@ import tech.industria.training.iou.api.IOUApi
 
 class IOUWebPlugin : WebServerPluginRegistry {
     // A list of classes that expose web JAX-RS REST APIs.
-    override val webApis: List<java.util.function.Function<CordaRPCOps, out Any>> = listOf(Function(::IOUApi))
+    override val webApis: List<Function<CordaRPCOps, out Any>> = listOf(Function(::IOUApi))
     //A list of directories in the resources directory that will be served by Jetty under /web.
     // This template's web frontend is accessible at /web/template.
     override val staticServeDirs: Map<String, String> = mapOf(

@@ -5,9 +5,10 @@ import net.corda.core.utilities.getOrThrow
 import net.corda.testing.core.TestIdentity
 import net.corda.testing.driver.DriverParameters
 import net.corda.testing.driver.driver
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import okhttp3.*
 import org.junit.Test
+import java.util.concurrent.TimeUnit
+import javax.ws.rs.core.Response
 import kotlin.test.assertEquals
 
 class DriverBasedTest {
@@ -34,7 +35,7 @@ class DriverBasedTest {
     }
 
     @Test
-    fun `node webserver test`() {
+    fun `node webserver api get ious`() {
         driver(DriverParameters(isDebug = true, startNodesInProcess = true)) {
             val nodeHandles = listOf(
                     startNode(providedName = bankA.name),
@@ -47,14 +48,35 @@ class DriverBasedTest {
                 val webserverHandle = startWebserver(nodeHandle).getOrThrow()
 
                 val nodeAddress = webserverHandle.listenAddress
-                val url = "http://$nodeAddress/api/iou/getEndpoint"
+                val url = "http://$nodeAddress/api/iou/ious"
 
                 val request = Request.Builder().url(url).build()
                 val client = OkHttpClient()
                 val response = client.newCall(request).execute()
 
-                assertEquals("{\"success\": true, \"data\": \"IOU Get Endpoint\" }", response.body().string())
+                assertEquals(200, response.code())
+                assertEquals("[ ]", response.body().string())
             }
+        }
+    }
+
+    @Test
+    fun `node webserver api issue ious`() {
+        driver(DriverParameters(isDebug = true, startNodesInProcess = true)) {
+            val bankAHandle = startNode(providedName = bankA.name).getOrThrow()
+            startNode(providedName = bankB.name).getOrThrow()
+
+            val webserverHandle = startWebserver(bankAHandle).getOrThrow()
+            val nodeAddress = webserverHandle.listenAddress
+            val url = "http://$nodeAddress/api/iou/issue?amount=10&currency=BGN&party=${bankB.name}"
+            val requestBody = RequestBody.create(MediaType.parse("application/json"), "")
+            val request = Request.Builder().url(url).put(requestBody).build()
+            val client = OkHttpClient.Builder().readTimeout(30, TimeUnit.SECONDS).build()
+            val response = client.newCall(request).execute()
+
+            assertEquals(Response.Status.CREATED.statusCode, response.code())
+            // TODO: Test the response
+            //assertEquals("Transaction id 1 sent to counterparty.", response.body().string())
         }
     }
 }
