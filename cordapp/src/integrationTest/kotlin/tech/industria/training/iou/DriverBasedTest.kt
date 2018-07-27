@@ -8,7 +8,7 @@ import net.corda.testing.driver.driver
 import okhttp3.*
 import org.junit.Test
 import java.util.concurrent.TimeUnit
-import javax.ws.rs.core.Response
+import javax.ws.rs.core.Response.Status
 import kotlin.test.assertEquals
 
 class DriverBasedTest {
@@ -74,7 +74,7 @@ class DriverBasedTest {
             val client = OkHttpClient.Builder().readTimeout(30, TimeUnit.SECONDS).build()
             val response = client.newCall(request).execute()
 
-            assertEquals(Response.Status.CREATED.statusCode, response.code())
+            assertEquals(Status.CREATED.statusCode, response.code())
             // TODO: Test the response
             //assertEquals("Transaction id 1 sent to counterparty.", response.body().string())
         }
