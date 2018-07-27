@@ -137,8 +137,8 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
     }
 }
 
-task runTemplateClient(type: JavaExec) {
+task runIOUClient(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    main = 'com.template.ClientKt'
+    main = 'tech.industria.training.iou.ClientKt'
     args 'localhost:10006'
 }
