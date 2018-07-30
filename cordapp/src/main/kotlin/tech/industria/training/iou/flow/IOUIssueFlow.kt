@@ -18,8 +18,8 @@ class IOUIssueFlow {
     @InitiatingFlow
     @StartableByRPC
     class Initiator(
-            val amount: Amount<Currency>,
-            val lender: Party
+        val amount: Amount<Currency>,
+        val lender: Party
 
     ) : FlowLogic<SignedTransaction>() {
 
@@ -44,8 +44,8 @@ class IOUIssueFlow {
             val issueCommand = Command(IOUContract.Commands.Issue(), outputState.participants.map { it.owningKey })
 
             val txBuilder = TransactionBuilder(notary = notary)
-                    .addOutputState(outputState, IOUContract.PROGRAM_ID)
-                    .addCommand(issueCommand)
+                .addOutputState(outputState, IOUContract.PROGRAM_ID)
+                .addCommand(issueCommand)
 
             progressTracker.currentStep = VERIFING_TX
 

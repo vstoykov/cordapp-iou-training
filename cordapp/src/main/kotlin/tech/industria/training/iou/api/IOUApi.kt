@@ -24,17 +24,19 @@ class IOUApi(val services: CordaRPCOps) {
     @PUT
     @Path("issue")
     @Produces(MediaType.APPLICATION_JSON)
-    fun issueIOUs(@QueryParam(value = "amount") amount: Int,
-                  @QueryParam(value = "currency") currency: String,
-                  @QueryParam(value = "party") party: String) : Response {
+    fun issueIOUs(
+        @QueryParam(value = "amount") amount: Int,
+        @QueryParam(value = "currency") currency: String,
+        @QueryParam(value = "party") party: String
+    ): Response {
 
         val (status, message) = try {
             val lenderIdentity = services.wellKnownPartyFromX500Name(CordaX500Name.parse(party))
                     ?: throw IllegalStateException("Couldn't lookup node identity for $party.")
             val result = services.startFlowDynamic(
-                    IOUIssueFlow.Initiator::class.java,
-                    Amount(amount.toLong() * 100, Currency.getInstance(currency)),
-                    lenderIdentity
+                IOUIssueFlow.Initiator::class.java,
+                Amount(amount.toLong() * 100, Currency.getInstance(currency)),
+                lenderIdentity
             ).use { it.returnValue.getOrThrow() }
             Status.CREATED to result.tx.outputs.single()
         } catch (e: Exception) {
@@ -42,9 +44,9 @@ class IOUApi(val services: CordaRPCOps) {
         }
 
         return Response
-                .status(status)
-                .entity(message)
-                .build()
+            .status(status)
+            .entity(message)
+            .build()
     }
 }
 

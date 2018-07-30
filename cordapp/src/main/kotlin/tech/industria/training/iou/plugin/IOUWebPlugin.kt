@@ -11,7 +11,7 @@ class IOUWebPlugin : WebServerPluginRegistry {
     //A list of directories in the resources directory that will be served by Jetty under /web.
     // This template's web frontend is accessible at /web/template.
     override val staticServeDirs: Map<String, String> = mapOf(
-            // This will serve the iou directory in resources to /web/iou
-            "iou" to javaClass.classLoader.getResource("iou").toExternalForm()
+        // This will serve the iou directory in resources to /web/iou
+        "iou" to javaClass.classLoader.getResource("iou").toExternalForm()
     )
 }

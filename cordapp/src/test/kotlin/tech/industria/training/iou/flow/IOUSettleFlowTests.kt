@@ -8,10 +8,11 @@ import kotlin.test.assertFailsWith
 
 class IOUSettleFlowTests : IOUFlowTestsBase() {
 
-    @Test fun `only the borrower can initiate the settle flow`() {
-        var issuanceTransaction = issueIOU(a, b, 10.POUNDS)
+    @Test
+    fun `only the borrower can initiate the settle flow`() {
+        val issuanceTransaction = issueIOU(a, b, 10.POUNDS)
         network.waitQuiescent()
-        var issuedIOU = issuanceTransaction.tx.outputStates.first() as IOUState
+        val issuedIOU = issuanceTransaction.tx.outputStates.first() as IOUState
 
         assertFailsWith<FlowException> {
             settleIOU(b, issuedIOU.linearId)

@@ -30,16 +30,20 @@ abstract class IOUFlowTestsBase {
         network.stopNodes()
     }
 
-    protected fun issueIOU(borrower: StartedMockNode,
-                           lender: StartedMockNode,
-                           amount: Amount<Currency>): SignedTransaction {
+    protected fun issueIOU(
+        borrower: StartedMockNode,
+        lender: StartedMockNode,
+        amount: Amount<Currency>
+    ): SignedTransaction {
         val lenderIdentity = lender.info.legalIdentities.first()
         val flow = IOUIssueFlow.Initiator(amount, lenderIdentity)
         return borrower.startFlow(flow).getOrThrow()
     }
 
-    protected fun settleIOU(borrower: StartedMockNode,
-                            linearId: UniqueIdentifier): SignedTransaction {
+    protected fun settleIOU(
+        borrower: StartedMockNode,
+        linearId: UniqueIdentifier
+    ): SignedTransaction {
         val flow = IOUSettleFlow.Initiator(linearId)
         return borrower.startFlow(flow).getOrThrow()
     }

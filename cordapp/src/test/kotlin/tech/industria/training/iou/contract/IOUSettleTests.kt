@@ -11,9 +11,10 @@ import tech.industria.training.iou.state.IOUState
 
 class IOUSettleTests {
     protected val ledgerServices = MockServices(
-            listOf("tech.industria.training.iou"),
-            identityService = makeTestIdentityService(),
-            initialIdentity = TestIdentity(CordaX500Name("TestIdentity", "", "BG")))
+        listOf("tech.industria.training.iou"),
+        identityService = makeTestIdentityService(),
+        initialIdentity = TestIdentity(CordaX500Name("TestIdentity", "", "BG"))
+    )
     protected val alice = TestIdentity(CordaX500Name("Alice", "", "BG"))
     protected val bob = TestIdentity(CordaX500Name("Bob", "", "BG"))
     protected val charlie = TestIdentity(CordaX500Name("Charlie", "", "BG"))

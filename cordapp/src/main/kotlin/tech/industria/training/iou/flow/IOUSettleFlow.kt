@@ -19,7 +19,7 @@ class IOUSettleFlow {
     @InitiatingFlow
     @StartableByRPC
     class Initiator(
-            private val linearId: UniqueIdentifier
+        private val linearId: UniqueIdentifier
 
     ) : FlowLogic<SignedTransaction>() {
         @Suspendable
@@ -37,8 +37,8 @@ class IOUSettleFlow {
             val command = Command(IOUContract.Commands.Settle(), iou.participants.map { it.owningKey })
 
             val builder = TransactionBuilder(notary = notary)
-                    .addInputState(stateAndRef)
-                    .addCommand(command)
+                .addInputState(stateAndRef)
+                .addCommand(command)
 
             builder.verify(serviceHub)
             val ptx = serviceHub.signInitialTransaction(builder)
@@ -50,8 +50,8 @@ class IOUSettleFlow {
 
         fun getIOUByLinearId(linearId: UniqueIdentifier): StateAndRef<IOUState> {
             val queryCriteria = QueryCriteria.LinearStateQueryCriteria(
-                    linearId = listOf(linearId),
-                    status = Vault.StateStatus.UNCONSUMED
+                linearId = listOf(linearId),
+                status = Vault.StateStatus.UNCONSUMED
             )
             return serviceHub.vaultService.queryBy<IOUState>(queryCriteria).states.singleOrNull()
                     ?: throw FlowException("Obligation with id $linearId not found.")

@@ -21,8 +21,8 @@ class DriverBasedTest {
             // This starts two nodes simultaneously with startNode, which returns a future that completes when the node
             // has completed startup. Then these are all resolved with getOrThrow which returns the NodeHandle list.
             val (partyAHandle, partyBHandle) = listOf(
-                    startNode(providedName = bankA.name),
-                    startNode(providedName = bankB.name)
+                startNode(providedName = bankA.name),
+                startNode(providedName = bankB.name)
             ).map { it.getOrThrow() }
 
             // This test makes an RPC call to retrieve another node's name from the network map, to verify that the
@@ -38,8 +38,8 @@ class DriverBasedTest {
     fun `node webserver api get ious`() {
         driver(DriverParameters(isDebug = true, startNodesInProcess = true)) {
             val nodeHandles = listOf(
-                    startNode(providedName = bankA.name),
-                    startNode(providedName = bankB.name)
+                startNode(providedName = bankA.name),
+                startNode(providedName = bankB.name)
             ).map { it.getOrThrow() }
 
             // This test starts each node's webserver and makes an HTTP call to retrieve the body of a GET endpoint on
