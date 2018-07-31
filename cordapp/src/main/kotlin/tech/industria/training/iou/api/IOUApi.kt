@@ -21,7 +21,7 @@ class IOUApi(val services: CordaRPCOps) {
     @Produces(MediaType.APPLICATION_JSON)
     fun getIOUs() = services.vaultQueryBy<IOUState>().states
 
-    @PUT
+    @POST
     @Path("issue")
     @Produces(MediaType.APPLICATION_JSON)
     fun issueIOUs(

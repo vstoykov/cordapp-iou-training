@@ -1,12 +1,18 @@
 package tech.industria.training.iou
 
 import net.corda.core.identity.CordaX500Name
+import net.corda.core.internal.concurrent.transpose
+import net.corda.core.messaging.vaultQueryBy
 import net.corda.core.utilities.getOrThrow
 import net.corda.testing.core.TestIdentity
 import net.corda.testing.driver.DriverParameters
 import net.corda.testing.driver.driver
 import okhttp3.*
+import org.json.JSONArray
+import org.json.JSONObject
 import org.junit.Test
+import org.skyscreamer.jsonassert.JSONAssert
+import tech.industria.training.iou.state.IOUState
 import java.util.concurrent.TimeUnit
 import javax.ws.rs.core.Response.Status
 import kotlin.test.assertEquals
@@ -23,7 +29,7 @@ class DriverBasedTest {
             val (partyAHandle, partyBHandle) = listOf(
                 startNode(providedName = bankA.name),
                 startNode(providedName = bankB.name)
-            ).map { it.getOrThrow() }
+            ).transpose().getOrThrow()
 
             // This test makes an RPC call to retrieve another node's name from the network map, to verify that the
             // nodes have started and can communicate. This is a very basic test, in practice tests would be starting
@@ -40,7 +46,7 @@ class DriverBasedTest {
             val nodeHandles = listOf(
                 startNode(providedName = bankA.name),
                 startNode(providedName = bankB.name)
-            ).map { it.getOrThrow() }
+            ).transpose().getOrThrow()
 
             // This test starts each node's webserver and makes an HTTP call to retrieve the body of a GET endpoint on
             // the node's webserver, to verify that the nodes' webservers have started and have loaded the API.
@@ -63,20 +69,71 @@ class DriverBasedTest {
     @Test
     fun `node webserver api issue ious`() {
         driver(DriverParameters(isDebug = true, startNodesInProcess = true)) {
-            val bankAHandle = startNode(providedName = bankA.name).getOrThrow()
-            startNode(providedName = bankB.name).getOrThrow()
+            val (bankAHandle, _) = listOf(bankA, bankB).map {
+                startNode(providedName = it.name)
+            }.transpose().getOrThrow()
 
             val webserverHandle = startWebserver(bankAHandle).getOrThrow()
             val nodeAddress = webserverHandle.listenAddress
-            val url = "http://$nodeAddress/api/iou/issue?amount=10&currency=BGN&party=${bankB.name}"
+            val uri = HttpUrl.parse("http://$nodeAddress/api/iou/issue")
+                .newBuilder()
+                .addQueryParameter("amount", "10")
+                .addQueryParameter("currency", "BGN")
+                .addQueryParameter("party", bankB.name.toString())
+                .build()
             val requestBody = RequestBody.create(MediaType.parse("application/json"), "")
-            val request = Request.Builder().url(url).put(requestBody).build()
+            val request = Request.Builder().url(uri).post(requestBody).build()
             val client = OkHttpClient.Builder().readTimeout(30, TimeUnit.SECONDS).build()
             val response = client.newCall(request).execute()
 
             assertEquals(Status.CREATED.statusCode, response.code())
-            // TODO: Test the response
-            //assertEquals("Transaction id 1 sent to counterparty.", response.body().string())
+
+            val states = bankAHandle.rpc.vaultQueryBy<IOUState>().states
+            assertEquals(1, states.size)
+
+            val state = states.single().state.data
+            val expected = JSONObject()
+                .put(
+                    "data", JSONObject()
+                        .put("amount", "10.00 BGN")
+                        .put("lender", bankB.name.toString())
+                        .put("borrower", bankA.name.toString())
+                        .put("paid", "0.00 BGN")
+                        .put(
+                            "linearId", JSONObject()
+                                .put("externalId", null as Any?)
+                                .put("id", state.linearId)
+                        )
+                        .put("participants", JSONArray(listOf(bankA.name.toString(), bankB.name.toString())))
+                        .put("encumbrance", null as Any?)
+                )
+            JSONAssert.assertEquals(expected.toString(), response.body().string(), false)
         }
+    }
+
+    @Test
+    fun `node webserver api bad issue data`() {
+        driver(DriverParameters(isDebug = true, startNodesInProcess = true)) {
+            val (bankAHandle, _) = listOf(bankA, bankB).map {
+                startNode(providedName = it.name)
+            }.transpose().getOrThrow()
+
+            val webserverHandle = startWebserver(bankAHandle).getOrThrow()
+            val nodeAddress = webserverHandle.listenAddress
+            val uri = HttpUrl.parse("http://$nodeAddress/api/iou/issue")
+                .newBuilder()
+                .addQueryParameter("amount", "10")
+                .addQueryParameter("currency", "BGN")
+                .addQueryParameter("party", "Invalid Party Name")
+                .build()
+            val requestBody = RequestBody.create(MediaType.parse("application/json"), "")
+            val request = Request.Builder().url(uri).post(requestBody).build()
+            val client = OkHttpClient.Builder().readTimeout(30, TimeUnit.SECONDS).build()
+            val response = client.newCall(request).execute()
+
+            assertEquals(Status.BAD_REQUEST.statusCode, response.code())
+            assertEquals("Couldn't lookup node identity for Invalid Party Name", response.body().string())
+        }
+
     }
 }
