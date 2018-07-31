@@ -28,7 +28,12 @@ fun main(args: Array<String>) {
             startNode(providedName = CordaX500Name("PartyB", "New York", "US"), rpcUsers = listOf(user))
         ).map { it.getOrThrow() }
 
-        startWebserver(partyA)
-        startWebserver(partyB)
+        val (webServerAddressA, webServerAddressB) = listOf(
+            startWebserver(partyA),
+            startWebserver(partyB)
+        ).map { it.getOrThrow().listenAddress }
+
+        System.out.println("Party A WEB Address http://$webServerAddressA")
+        System.out.println("Party B WEB Address http://$webServerAddressB")
     }
 }
