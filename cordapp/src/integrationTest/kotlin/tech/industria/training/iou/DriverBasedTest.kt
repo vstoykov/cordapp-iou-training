@@ -3,6 +3,7 @@ package tech.industria.training.iou
 import net.corda.core.identity.CordaX500Name
 import net.corda.core.internal.concurrent.transpose
 import net.corda.core.messaging.vaultQueryBy
+import net.corda.core.utilities.NetworkHostAndPort
 import net.corda.core.utilities.getOrThrow
 import net.corda.testing.core.TestIdentity
 import net.corda.testing.driver.DriverParameters
@@ -75,16 +76,7 @@ class DriverBasedTest {
 
             val webserverHandle = startWebserver(bankAHandle).getOrThrow()
             val nodeAddress = webserverHandle.listenAddress
-            val uri = HttpUrl.parse("http://$nodeAddress/api/iou/issue")
-                .newBuilder()
-                .addQueryParameter("amount", "10")
-                .addQueryParameter("currency", "BGN")
-                .addQueryParameter("party", bankB.name.toString())
-                .build()
-            val requestBody = RequestBody.create(MediaType.parse("application/json"), "")
-            val request = Request.Builder().url(uri).post(requestBody).build()
-            val client = OkHttpClient.Builder().readTimeout(30, TimeUnit.SECONDS).build()
-            val response = client.newCall(request).execute()
+            val response = issueIOUApiCall(nodeAddress, "10", "BGN", bankB.name.toString())
 
             assertEquals(Status.CREATED.statusCode, response.code())
 
@@ -120,20 +112,32 @@ class DriverBasedTest {
 
             val webserverHandle = startWebserver(bankAHandle).getOrThrow()
             val nodeAddress = webserverHandle.listenAddress
-            val uri = HttpUrl.parse("http://$nodeAddress/api/iou/issue")
-                .newBuilder()
-                .addQueryParameter("amount", "10")
-                .addQueryParameter("currency", "BGN")
-                .addQueryParameter("party", "Invalid Party Name")
-                .build()
-            val requestBody = RequestBody.create(MediaType.parse("application/json"), "")
-            val request = Request.Builder().url(uri).post(requestBody).build()
-            val client = OkHttpClient.Builder().readTimeout(30, TimeUnit.SECONDS).build()
-            val response = client.newCall(request).execute()
 
-            assertEquals(Status.BAD_REQUEST.statusCode, response.code())
-            assertEquals("Couldn't lookup node identity for Invalid Party Name", response.body().string())
+            val responseInvalidX500Name = issueIOUApiCall(nodeAddress, "10", "BGN", "Invalid Party Name")
+            assertEquals(Status.BAD_REQUEST.statusCode, responseInvalidX500Name.code())
+            assertEquals("improperly specified input name: Invalid Party Name", responseInvalidX500Name.body().string())
+
+            val responseMissingOrganisation = issueIOUApiCall(nodeAddress, "10", "BGN", "O=Missing Org, L=Gorno Nanadolnishte, C=BG")
+            assertEquals(Status.BAD_REQUEST.statusCode, responseMissingOrganisation.code())
+            assertEquals("couldn't lookup node identity for: O=Missing Org, L=Gorno Nanadolnishte, C=BG", responseMissingOrganisation.body().string())
         }
+    }
 
+    // *********************
+    // * Utility Functions *
+    // *********************
+
+    fun issueIOUApiCall(nodeAddress: NetworkHostAndPort, amount: String, currency: String, party: String): Response {
+        val uri = HttpUrl.parse("http://$nodeAddress/api/iou/issue")
+            .newBuilder()
+            .addQueryParameter("amount", amount)
+            .addQueryParameter("currency", currency)
+            .addQueryParameter("party", party)
+            .build()
+        val requestBody = RequestBody.create(MediaType.parse("application/json"), "")
+        val request = Request.Builder().url(uri).post(requestBody).build()
+        val client = OkHttpClient.Builder().readTimeout(30, TimeUnit.SECONDS).build()
+        val response = client.newCall(request).execute()
+        return response
     }
 }

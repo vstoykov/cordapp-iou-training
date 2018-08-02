@@ -32,7 +32,7 @@ class IOUApi(val services: CordaRPCOps) {
 
         val (status, message) = try {
             val lenderIdentity = services.wellKnownPartyFromX500Name(CordaX500Name.parse(party))
-                    ?: throw IllegalStateException("Couldn't lookup node identity for $party.")
+                    ?: throw IllegalStateException("couldn't lookup node identity for: $party")
             val result = services.startFlowDynamic(
                 IOUIssueFlow.Initiator::class.java,
                 Amount(amount.toLong() * 100, Currency.getInstance(currency)),
