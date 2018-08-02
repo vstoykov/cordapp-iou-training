@@ -3,6 +3,7 @@ package tech.industria.training.iou.api
 import net.corda.core.contracts.Amount
 import net.corda.core.identity.CordaX500Name
 import net.corda.core.messaging.CordaRPCOps
+import net.corda.core.messaging.startFlow
 import net.corda.core.messaging.vaultQueryBy
 import net.corda.core.utilities.getOrThrow
 import tech.industria.training.iou.flow.IOUIssueFlow
@@ -33,8 +34,8 @@ class IOUApi(val services: CordaRPCOps) {
         val (status, message) = try {
             val lenderIdentity = services.wellKnownPartyFromX500Name(CordaX500Name.parse(party))
                     ?: throw IllegalStateException("couldn't lookup node identity for: $party")
-            val result = services.startFlowDynamic(
-                IOUIssueFlow.Initiator::class.java,
+            val result = services.startFlow(
+                IOUIssueFlow::Initiator,
                 Amount(amount.toLong() * 100, Currency.getInstance(currency)),
                 lenderIdentity
             ).use { it.returnValue.getOrThrow() }
