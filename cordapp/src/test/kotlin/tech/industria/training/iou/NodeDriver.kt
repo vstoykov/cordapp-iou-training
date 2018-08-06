@@ -23,17 +23,17 @@ fun main(args: Array<String>) {
     // No permissions required as we are not invoking flows.
     val user = User("user1", "test", permissions = setOf("ALL"))
     driver(DriverParameters(isDebug = true, waitForAllNodesToFinish = true)) {
-        val (partyA, partyB) = listOf(
-            startNode(providedName = CordaX500Name("PartyA", "London", "GB"), rpcUsers = listOf(user)),
-            startNode(providedName = CordaX500Name("PartyB", "New York", "US"), rpcUsers = listOf(user))
-        ).map { it.getOrThrow() }
-
-        val (webServerAddressA, webServerAddressB) = listOf(
-            startWebserver(partyA),
-            startWebserver(partyB)
-        ).map { it.getOrThrow().listenAddress }
-
-        System.out.println("Party A WEB Address http://$webServerAddressA")
-        System.out.println("Party B WEB Address http://$webServerAddressB")
+        listOf(
+            CordaX500Name("PartyA", "London", "GB"),
+            CordaX500Name("PartyB", "New York", "US")
+        ).map {
+            it to startNode(providedName = it, rpcUsers = listOf(user)).getOrThrow()
+        }.map {
+            val (name, party) = it
+            name to startWebserver(party).getOrThrow().listenAddress
+        }.forEach() {
+            val (name, address) = it
+            System.out.println(" WEB server at http://$address is for party ($name)")
+        }
     }
 }
