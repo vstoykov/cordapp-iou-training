@@ -9,7 +9,8 @@ import net.corda.testing.node.MockServices
 import net.corda.testing.node.ledger
 import net.corda.testing.node.makeTestIdentityService
 import org.junit.Test
-import tech.industria.training.iou.state.IOUState
+import tech.industria.training.iou.IOUContract
+import tech.industria.training.iou.IOUState
 
 class IOUIssueTests {
     protected val ledgerServices = MockServices(

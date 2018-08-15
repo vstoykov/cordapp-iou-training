@@ -6,7 +6,7 @@ import net.corda.core.flows.FlowException
 import net.corda.finance.POUNDS
 import net.corda.testing.core.singleIdentity
 import org.junit.Test
-import tech.industria.training.iou.state.IOUState
+import tech.industria.training.iou.IOUState
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 

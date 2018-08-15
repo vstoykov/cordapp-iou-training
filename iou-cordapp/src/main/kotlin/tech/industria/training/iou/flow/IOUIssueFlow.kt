@@ -9,8 +9,8 @@ import net.corda.core.identity.Party
 import net.corda.core.transactions.SignedTransaction
 import net.corda.core.transactions.TransactionBuilder
 import net.corda.core.utilities.ProgressTracker
-import tech.industria.training.iou.contract.IOUContract
-import tech.industria.training.iou.state.IOUState
+import tech.industria.training.iou.IOUContract
+import tech.industria.training.iou.IOUState
 import java.math.BigDecimal
 import java.util.*
 

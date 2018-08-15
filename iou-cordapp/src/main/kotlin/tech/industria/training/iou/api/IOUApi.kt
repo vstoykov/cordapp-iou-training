@@ -7,7 +7,7 @@ import net.corda.core.messaging.startFlow
 import net.corda.core.messaging.vaultQueryBy
 import net.corda.core.utilities.getOrThrow
 import tech.industria.training.iou.flow.IOUIssueFlow
-import tech.industria.training.iou.state.IOUState
+import tech.industria.training.iou.IOUState
 import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType

@@ -5,7 +5,7 @@ import net.corda.core.contracts.StateAndRef
 import net.corda.core.utilities.NetworkHostAndPort.Companion.parse
 import net.corda.core.utilities.loggerFor
 import org.slf4j.Logger
-import tech.industria.training.iou.state.IOUState
+import tech.industria.training.iou.IOUState
 
 /**
  * Demonstration of how to use the CordaRPCClient to connect to a Corda Node and

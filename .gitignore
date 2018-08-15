@@ -56,8 +56,8 @@ lib/dokka.jar
 
 # IntelliJ
 /out/
-cordapp/out/
-cordapp-contracts-states/out/
+iou-cordapp/out/
+iou-contracts-states/out/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/

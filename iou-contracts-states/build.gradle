@@ -18,33 +18,20 @@ apply plugin: 'maven-publish'
 sourceSets {
     main {
         resources {
-            srcDir "config/dev"
+            srcDir "../config/dev"
         }
     }
     test {
         resources {
-            srcDir "config/test"
+            srcDir "../config/test"
         }
     }
-    integrationTest {
-        kotlin {
-            compileClasspath += main.output + test.output
-            runtimeClasspath += main.output + test.output
-            srcDir file('src/integration-test/kotlin')
-        }
-    }
-}
-
-configurations {
-    integrationTestCompile.extendsFrom testCompile
-    integrationTestRuntime.extendsFrom testRuntime
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testCompile "junit:junit:$junit_version"
-    testCompile "org.skyscreamer:jsonassert:$jsonassert_version"
 
     // Corda integration dependencies
     cordaCompile "$corda_release_distribution:corda-core:$corda_release_version"
@@ -59,21 +46,11 @@ dependencies {
     testCompile "$corda_release_distribution:corda-test-utils:$corda_release_version"
     testCompile "$corda_release_distribution:corda-node-driver:$corda_release_version"
 
-
     // GraphStream: For visualisation (required by TemplateClientRPC app)
     compile "org.graphstream:gs-core:1.3"
     compile("org.graphstream:gs-ui:1.3") {
         exclude group: "bouncycastle"
     }
-
-    // CorDapp dependencies
-    // Specify your CorDapp's dependencies below, including dependent CorDapps.
-     cordapp project(":iou-contracts-states")
-}
-
-task integrationTest(type: Test, dependsOn: []) {
-    testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath = sourceSets.integrationTest.runtimeClasspath
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {

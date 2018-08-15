@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run Contract Tests" type="JUnit" factoryName="JUnit">
-    <module name="iou-cordapp_test" />
+    <module name="iou-contracts-states_test" />
     <option name="PACKAGE_NAME" value="tech.industria.training.iou.contract" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />

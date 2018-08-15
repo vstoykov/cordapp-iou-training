@@ -1,12 +1,17 @@
-package tech.industria.training.iou.contract
+package tech.industria.training.iou
 
 import net.corda.core.contracts.*
+import net.corda.core.identity.Party
 import net.corda.core.transactions.LedgerTransaction
-import tech.industria.training.iou.state.IOUState
+import java.util.*
 
+
+// *****************
+// * Contract Code *
+// *****************
 class IOUContract : Contract {
     companion object {
-        const val PROGRAM_ID: ContractClassName = "tech.industria.training.iou.contract.IOUContract"
+        const val PROGRAM_ID: ContractClassName = "tech.industria.training.iou.IOUContract"
     }
 
     // Used to indicate the transaction's intent.
@@ -61,4 +66,17 @@ class IOUContract : Contract {
             else -> throw IllegalArgumentException("Invalid command")
         }
     }
+}
+
+// *********
+// * State *
+// *********
+data class IOUState(
+        val amount: Amount<Currency>,
+        val lender: Party,
+        val borrower: Party,
+        val paid: Amount<Currency> = Amount(0, amount.token),
+        override val linearId: UniqueIdentifier = UniqueIdentifier()
+) : LinearState {
+    override val participants get() = listOf(lender, borrower)
 }

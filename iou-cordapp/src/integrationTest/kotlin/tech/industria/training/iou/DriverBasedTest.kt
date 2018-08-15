@@ -13,7 +13,6 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import tech.industria.training.iou.state.IOUState
 import java.util.concurrent.TimeUnit
 import javax.ws.rs.core.Response.Status
 import kotlin.test.assertEquals

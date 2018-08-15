@@ -9,7 +9,8 @@ import net.corda.testing.node.MockServices
 import net.corda.testing.node.ledger
 import net.corda.testing.node.makeTestIdentityService
 import org.junit.Test
-import tech.industria.training.iou.state.IOUState
+import tech.industria.training.iou.IOUContract
+import tech.industria.training.iou.IOUState
 
 class IOUTransferTests {
     protected val ledgerServices = MockServices(
@@ -52,8 +53,8 @@ class IOUTransferTests {
             }
             transaction {
                 command(participants, IOUContract.Commands.Transfer())
-                input(IOUContract.PROGRAM_ID, IOUTransferTests.DummyState())
-                input(IOUContract.PROGRAM_ID, IOUTransferTests.DummyState())
+                input(IOUContract.PROGRAM_ID, DummyState())
+                input(IOUContract.PROGRAM_ID, DummyState())
                 output(IOUContract.PROGRAM_ID, bobOwesAliceTen)
                 this `fails with` "An IOU transfer transaction should only consume one input state"
             }
@@ -65,12 +66,12 @@ class IOUTransferTests {
         ledgerServices.ledger {
             transaction {
                 command(participants, IOUContract.Commands.Transfer())
-                input(IOUContract.PROGRAM_ID, IOUTransferTests.DummyState())
+                input(IOUContract.PROGRAM_ID, DummyState())
                 this `fails with` "An IOU transfer transaction should only produce one output state"
             }
             transaction {
                 command(participants, IOUContract.Commands.Transfer())
-                input(IOUContract.PROGRAM_ID, IOUTransferTests.DummyState())
+                input(IOUContract.PROGRAM_ID, DummyState())
                 output(IOUContract.PROGRAM_ID, bobOwesAliceTen)
                 output(IOUContract.PROGRAM_ID, bobOwesAliceTen)
                 this `fails with` "An IOU transfer transaction should only produce one output state"

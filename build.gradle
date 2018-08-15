@@ -92,6 +92,7 @@ dependencies {
     // CorDapp dependencies
     // Specify your CorDapp's dependencies below, including dependent CorDapps.
     // We've defined Cash as a dependent CorDapp as an example.
+    cordapp project(":iou-contracts-states")
     cordapp project(":iou-cordapp")
     cordapp "$corda_release_distribution:corda-finance:$corda_release_version"
 }
@@ -117,7 +118,7 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         notary = [validating : true]
         p2pPort 10002
         cordapps = [
-                "$project.group:cordapp:$project.version",
+                "$project.group:iou-cordapp:$project.version",
                 "$corda_release_distribution:corda-finance:$corda_release_version"
         ]
     }
@@ -130,7 +131,7 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         }
         webPort 10007
         cordapps = [
-                "$project.group:cordapp:$project.version",
+                "$project.group:iou-cordapp:$project.version",
                 "$corda_release_distribution:corda-finance:$corda_release_version"
         ]
         rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
@@ -144,7 +145,7 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         }
         webPort 10010
         cordapps = [
-                "$project.group:cordapp:$project.version",
+                "$project.group:iou-cordapp:$project.version",
                 "$corda_release_distribution:corda-finance:$corda_release_version"
         ]
         rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]

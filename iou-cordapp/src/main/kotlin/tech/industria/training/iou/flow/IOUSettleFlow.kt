@@ -10,8 +10,8 @@ import net.corda.core.node.services.queryBy
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.transactions.SignedTransaction
 import net.corda.core.transactions.TransactionBuilder
-import tech.industria.training.iou.contract.IOUContract
-import tech.industria.training.iou.state.IOUState
+import tech.industria.training.iou.IOUContract
+import tech.industria.training.iou.IOUState
 import java.math.BigDecimal
 import java.util.*
 

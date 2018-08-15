@@ -3,7 +3,7 @@ package tech.industria.training.iou.flow
 import net.corda.core.flows.FlowException
 import net.corda.finance.POUNDS
 import org.junit.Test
-import tech.industria.training.iou.state.IOUState
+import tech.industria.training.iou.IOUState
 import kotlin.test.assertFailsWith
 
 class IOUSettleFlowTests : IOUFlowTestsBase() {
