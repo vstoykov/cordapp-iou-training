@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run IOU RPC Client" type="JetRunConfigurationType" factoryName="Kotlin" singleton="true">
-    <module name="cordapp_main" />
+    <module name="iou-cordapp_test" />
     <option name="VM_PARAMETERS" value="" />
     <option name="PROGRAM_PARAMETERS" value="localhost:10006" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -8,6 +8,8 @@
     <option name="PASS_PARENT_ENVS" value="true" />
     <option name="MAIN_CLASS_NAME" value="tech.industria.training.iou.ClientKt" />
     <option name="WORKING_DIRECTORY" value="" />
-    <method />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
   </configuration>
 </component>
