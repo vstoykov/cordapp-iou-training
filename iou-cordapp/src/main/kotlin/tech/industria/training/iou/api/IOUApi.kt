@@ -41,7 +41,7 @@ class IOUApi(val services: CordaRPCOps) {
             ).use { it.returnValue.getOrThrow() }
             Status.CREATED to result.tx.outputs.single()
         } catch (e: Exception) {
-            Status.BAD_REQUEST to e.message
+            Status.BAD_REQUEST to mapOf("error" to e.message)
         }
 
         return Response
